@@ -1,0 +1,52 @@
+#include "AddRectAction.h"
+#include "..\Figures\CRectangle.h"
+
+#include "..\ApplicationManager.h"
+
+#include "..\GUI\input.h"
+#include "..\GUI\Output.h"
+
+//Constructor
+AddRectAction::AddRectAction(ApplicationManager* pApp) : Action(pApp)
+{
+}
+void AddRectAction::ReadActionParameters()
+{
+	//Get a Pointer to the Input and Output Interfaces
+	Output* pOut = pManager->GetOutput();
+	Input* pIn = pManager->GetInput();
+
+	pOut->PrintMessage("New Rectangle: Click at first corner");
+
+	//Read first corner and it
+	pIn->GetPointClicked(P1.x, P1.y);
+
+	pOut->PrintMessage("New Rectangle: Click at second corner");
+
+	//Read second corner and store it
+	pIn->GetPointClicked(P2.x, P2.y);
+
+	RectGfxInfo.isFilled = UI.isFilled; //  the current fill state
+	if (UI.isFilled)
+		RectGfxInfo.FillClr = UI.FillColor; //  the selected fill color
+	RectGfxInfo.DrawClr = pOut->getCrntDrawColor();
+	RectGfxInfo.BorderWdth = pOut->getCrntPenWidth();
+
+	pOut->ClearStatusBar();
+
+}
+
+//Execute the action
+void AddRectAction::Execute()
+{
+	//read parameters first
+	ReadActionParameters();
+
+	//Create a rectangle 
+	CRectangle* R = new CRectangle(P1, P2, RectGfxInfo);
+
+	//Add the rectangle to the array of figures
+	pManager->AddFigure(R);
+	pManager->UpdateInterface();
+}
+
